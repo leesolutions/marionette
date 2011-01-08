@@ -1,0 +1,28 @@
+PATH
+  remote: .
+  specs:
+    marionette (0.0.1)
+      daemons
+      ffi
+      ffi-rzmq
+      zmq
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    daemons (1.1.0)
+    ffi (1.0.4)
+      rake (>= 0.8.7)
+    ffi-rzmq (0.7.0)
+    rake (0.8.7)
+    zmq (2.1.0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  daemons
+  ffi
+  ffi-rzmq
+  marionette!
+  zmq

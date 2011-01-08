@@ -1,0 +1,13 @@
+#!/usr/local/bin/ruby
+
+require 'rubygems'
+require 'daemons'
+require 'marionette'
+
+tcp = ARGV[1] rescue nil
+options = { :uri => tcp } unless ARGV.nil?
+puts "Connecting on #{tcp}..."
+
+Daemons.run_proc('marionette-puppet',:dir => '/var/run', :log_output => true) do
+  HeadStartApp::Marionette::Connect.new(options).puppet
+end
