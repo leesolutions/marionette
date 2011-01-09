@@ -98,6 +98,7 @@ module HeadStartApp
       # Fetches facts collection
       def facter_run
         
+        Facter.loadfacts
         @message = Facter.collection.to_hash
         
       end
