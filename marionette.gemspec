@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.executables << 'marionette-master'
   s.executables << 'marionette-puppet'
+  s.add_dependency('facter')
   s.add_dependency('zmq')
   s.add_dependency('ffi')
   s.add_dependency('ffi-rzmq')

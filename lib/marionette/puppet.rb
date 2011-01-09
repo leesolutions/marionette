@@ -2,11 +2,12 @@ module HeadStartApp
   module Marionette
 
     require 'uri'
+    require 'facter'
   
   
     # Puppet class is the active ZMQ connection on the puppet node
     class Puppet
-      attr_accessor :socket, :thread
+      attr_accessor :socket, :thread, :message
   
       def initialize(socket)
 
@@ -35,12 +36,16 @@ module HeadStartApp
         # Stand by for a response msg
         @response = @socket.recv
         
+        # Sets default message to current time
+        @message = "Response from node @ #{Time.now}."
+        
         begin
           
           # Execute a puppet run and/or ad hoc system commands
           @response = Marshal.load(@response)
           puppet_run if @response[:run][:puppet]
           system_run if @response[:run][:system]
+          facter_run if @response[:run][:facter]
           
         rescue
           
@@ -51,7 +56,7 @@ module HeadStartApp
 
         # Send back system stats
         # @socket.send Marshal.dump(stats)
-        @socket.send Marshal.dump(Time.now)
+        @socket.send Marshal.dump(@message)
 
       end
       
@@ -89,8 +94,15 @@ module HeadStartApp
         end
   
       end
+      
+      # Fetches facts collection
+      def facter_run
+        
+        @message = Facter.collection.to_hash
+        
+      end
   
-      # Gathers stats
+      # Some stats
       # - to be set up as a fact(s) later
       def stats
   

@@ -7,27 +7,48 @@ master and executes puppet runs on demand. Marionette uses fast and lightweight
 
 For more about Headstartapp see <http://headstartapp.com>.
 
+
 Installation
 ------------
 
+    # If you're using RVM, run this under the system context.
+    # Be sure to have the appropriate port open (for the following example, port 5555).
+    
     gem install marionette
+
+
 
 Example
 -------
 
+    # In this example, puppet and master are on the same local network 
+    # and the puppet's ip is 192.168.1.1.
+    #
+    # Note: By default, Marionette connects to "tcp://127.0.0.1:5555"
+    #
+    # Results:
+    # 1) on the pupet, /tmp/headstartapp-marionette-test.out contains "testing 1 2 3"
+    # 2) master.receive returns puppet's facts as a hash.
+    # 3) Note: this example does not execute a puppet run. 
+
+
     Ruby:
 
+    require 'rubygems'
     require 'marionette'
-    # By default, Marionette connects to "tcp://master.headstartapp.com:5555"
-    Headstartapp::Marionette::Connect.new.master
-    # Connect to a different master
-    Headstartapp::Marionette::Connect.new("tcp://master.example.com:5555").master
+
+    puppet = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555) puppet
+    master = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555").master
+    message = {:run=>{:system=>true,:puppet=>false,:facter=>true},:system=>{:command=>"echo 'testing 1 2 3' > /tmp/headstartapp-marionette-test.out"}}
+    master.send message
+    master.receive
 
 
-    CLI (start as a daemon):
 
-    marionette-master start tcp://master.example.com:5555
-    marionette-puppet start tcp://master.example.com:5555
+    CLI (start marionette-puppet as a daemon):
+
+    marionette-puppet start tcp://192.168.1.1:5555
+
 
 
 Meta
