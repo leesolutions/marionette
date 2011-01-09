@@ -21,15 +21,14 @@ Installation
 Example
 -------
 
-    # In this example, puppet and master are on the same local network 
-    # and the puppet's ip is 192.168.1.1.
-    #
-    # Note: By default, Marionette connects to "tcp://127.0.0.1:5555"
-    #
-    # Results:
-    # 1) on the pupet, /tmp/headstartapp-marionette-test.out contains "testing 1 2 3"
-    # 2) master.receive returns puppet's facts as a hash.
-    # 3) Note: this example does not execute a puppet run. 
+In this example, puppet and master are on the same local network and the puppet's ip is 192.168.1.1.
+
+Note: By default, Marionette connects to "tcp://127.0.0.1:5555"
+
+Results:
+1) on the pupet, /tmp/headstartapp-marionette-test.out contains "test #{Time.now}"
+2) master.receive returns puppet's facts as a hash.
+3) Note: this example does not execute a puppet run. 
 
 
     Ruby:
