@@ -39,7 +39,7 @@ Example
 
     puppet = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555) puppet
     master = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555").master
-    message = {:run=>{:system=>true,:puppet=>false,:facter=>true},:system=>{:command=>"echo 'testing 1 2 3' > /tmp/headstartapp-marionette-test.out"}}
+    message = {:run=>{:system=>true,:facter=>true},:system=>{:command=>"echo 'test @ #{Time.now}' > /tmp/test.out"}}
     master.send message
     master.receive
 
