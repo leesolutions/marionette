@@ -5,11 +5,24 @@ Marionette connects a headstartapp server instance (puppet node) to its
 master and executes puppet runs on demand. Marionette uses fast and lightweight 
 0MQ <http://zeromq.org> messaging system.
 
+
+
 For more about Headstartapp see <http://headstartapp.com>.
 
 
 Installation
 ------------
+
+You must, of course, first install zeromq.  Run the following as root: 
+
+    wget http://download.zeromq.org/zeromq-2.1.0.tar.gz
+    tar zxvf zeromq-2.1.0.tar.gz
+    cd zeromq-2.1.0
+    ./configure
+    make
+    make install
+    ldconfig
+
 
 If you're using RVM, run this under the system context.
 Be sure to have the appropriate port open (for the following example, port 5555) 
@@ -22,13 +35,17 @@ on the puppet node.
 Example
 -------
 
+The following has been tested on Centos 5.5 running Ruby 1.8.7-p174 and p302.
 In this example, puppet and master are on the same local network and the puppet's ip is 192.168.1.1.
 
 Note: By default, Marionette connects to "tcp://127.0.0.1:5555"
 
 Results:
+
 1) on the pupet, /tmp/test.out contains "test #{Time.now}"
+
 2) master.receive returns puppet's facts as a hash.
+
 3) Note: this example does not execute a puppet run. 
 
 
@@ -45,15 +62,19 @@ Results:
 
 
 
-    CLI (start marionette-puppet as a daemon):
+    CLI:
 
-    marionette start tcp://192.168.1.1:5555
+    marionette start tcp://192.168.1.1:5555 # start marionette as a daemon
 
 
 
-    Rake (set up marionette as a service; run from gem dir):
+    MISC:
 
-    rake marionette:service
+    # run as root
+    chkconfig marionette on     # start marionette daemon at boot
+    service marionette start    # start marionette as a service
+    service marionette restart  # restart marionette service
+    service marionette stop     # stop marionette service
 
 
 

@@ -87,8 +87,13 @@ CODE
 
     ip = `ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
 
-    File.open('/etc/init.d/marionette','w') { |file| file.puts script }
-    File.open('/etc/marionette.tcp','w') { |file| file.puts ip }
+    file = File.open('/etc/init.d/marionette','w')
+    file.write script
+    file.close
+    
+    file = File.open('/etc/marionette.tcp','w')
+    file.write ip
+    file.close
     
     system "chmod 755 /etc/init.d/marionette"
     system "chkconfig marionette on"
