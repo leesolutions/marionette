@@ -7,6 +7,8 @@ require 'marionette'
 tcp = ARGV[1] rescue nil
 options = { :uri => tcp } unless ARGV.nil?
 
+puts options
+
 Daemons.run_proc('marionette',:dir_mode => :system, :log_output => true) do
   HeadStartApp::Marionette::Connect.new(options).puppet
 end

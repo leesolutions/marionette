@@ -51,9 +51,9 @@ Results:
 
 
 
-    Rake (set up marionette as a service:
+    Rake (set up marionette as a service; run from gem dir):
 
-    rake setup-service
+    rake marionette:service
 
 
 
