@@ -38,18 +38,9 @@ Example
 The following has been tested on Centos 5.5 running Ruby 1.8.7-p174 and p302.
 In this example, puppet and master are on the same local network and the puppet's ip is 192.168.1.1.
 
-Note: By default, Marionette connects to "tcp://127.0.0.1:5555"
-
-Results:
-
-1) on the pupet, /tmp/test.out contains "test #{Time.now}"
-
-2) master.receive returns puppet's facts as a hash.
-
-3) Note: this example does not execute a puppet run. 
 
 
-    Ruby:
+Ruby:
 
     require 'rubygems'
     require 'marionette'
@@ -60,15 +51,21 @@ Results:
     master.send message
     master.receive
 
+    # Results:
+    # 
+    # 1) on the pupet, /tmp/test.out contains "test #{Time.now}"
+    # 2) master.receive returns puppet's facts as a hash.
+    # 3) Note: this example does not execute a puppet run. 
 
 
-    CLI:
+
+CLI:
 
     marionette start tcp://192.168.1.1:5555 # start marionette as a daemon
 
 
 
-    MISC:
+MISC:
     # By default, the tcp location will be the connection on eth1 and port 5555
     # The service picks up the tcp location from /etc/marionette.tcp, update if necessary.
 
