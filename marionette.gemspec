@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 require "marionette/version"
-require 'tasks/marionette.rake'
 
 Gem::Specification.new do |s|
   s.name        = "marionette"
