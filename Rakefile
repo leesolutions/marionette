@@ -82,7 +82,7 @@ esac
 exit 0
 CODE
 
-    system "chmod 755 /etc/init.d/marionette"
+    system "chmod 755 /etc/rc.d/init.d/marionette"
     system "chkconfig marionette on"
     system "service marionette start"
   end
