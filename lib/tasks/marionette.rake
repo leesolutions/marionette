@@ -1,3 +1,8 @@
+namespace :marionette do
+  desc 'Set up marionette as a service (run this as sudo/root)'
+  task :service do
+
+    file '/etc/init.d/marionette', <<-CODE
 #!/bin/bash
 
 ### BEGIN INIT INFO
@@ -34,7 +39,7 @@ d_start() {
 }
 
 d_stop() {
-  kill -QUIT `cat $PIDFILE` || echo -en "\n not running"
+  kill -9 `cat $PIDFILE` || echo -en "\n not running"
 }
 
 case "$1" in
@@ -62,3 +67,11 @@ case "$1" in
 esac
 
 exit 0
+CODE
+
+    system "chmod 755 /etc/init.d/marionette"
+    system "chkconfig marionette on"
+    system "service marionette start"
+  end
+end
+
