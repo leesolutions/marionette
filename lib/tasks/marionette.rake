@@ -1,5 +1,15 @@
+require 'rake'
+
 namespace :marionette do
+
+  # task description
   desc 'Set up marionette as a service (run this as sudo/root)'
+  
+  # define task:
+  # 1) write to init.d/marionette
+  # 2) set permissions
+  # 3) set ifconfig
+  # 4) start service
   task :service do
 
     file '/etc/init.d/marionette', <<-CODE
@@ -73,5 +83,9 @@ CODE
     system "chkconfig marionette on"
     system "service marionette start"
   end
+  
+  # set "service" as the default task
+  task :default => 'marionette:service'
+
 end
 

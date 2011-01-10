@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 require "marionette/version"
+require 'tasks/marionette.rake'
 
 Gem::Specification.new do |s|
   s.name        = "marionette"
@@ -23,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency('ffi')
   s.add_dependency('ffi-rzmq')
   s.add_dependency('daemons')
-  s.require_paths = ["lib","lib/tasks/marionette.rake"]
+  s.require_paths = ["lib"]
   s.bindir        = "bin"
 end
+
