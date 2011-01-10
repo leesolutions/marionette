@@ -80,6 +80,14 @@ Results:
     
 
 
+To Do
+----
+
+1) Complete implementation for puppet runs.
+2) Example of executing a run.
+3) Instructions for setting up SSH Tunnel to secure marionette.
+
+
 
 Meta
 ----
