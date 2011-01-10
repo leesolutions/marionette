@@ -15,7 +15,7 @@ namespace :marionette do
   # 4) start service
   task :service do
 
-    file '/etc/rc.d/init.d/marionette', <<-CODE
+    script = <<CODE
 #!/bin/bash
 
 ### BEGIN INIT INFO
@@ -24,6 +24,7 @@ namespace :marionette do
 # Default-Stop: 0 1 6
 # Short-Description: start and stop marionette
 # Description: 0mq connection for puppet and master.
+# chkconfig:   - 85 15 
 ### END INIT INFO
 
 # source function library
@@ -80,15 +81,19 @@ case "$1" in
 esac
 
 exit 0
-CODE
 
-    system "chmod 755 /etc/rc.d/init.d/marionette"
+CODE
+    file = File.open('/etc/init.d/marionette','w')
+    file.write script
+    file.close
+    
+    system "chmod 755 /etc/init.d/marionette"
     system "chkconfig marionette on"
     system "service marionette start"
   end
   
   # set "service" as the default task
-  task :default => 'marionette:service'
+  task :default => [:service]
 
 end
 
