@@ -66,8 +66,8 @@ CLI:
 
 
 MISC:
-    # By default, the tcp location will be the connection on eth1 and port 5555
-    # The service picks up the tcp location from /etc/marionette.tcp, update if necessary.
+    # By default, the tcp connection is on eth1 over port 5555.
+    # Tcp location is read from /etc/marionette.tcp.  Update if necessary.
 
     # run as root
     chkconfig marionette on     # start marionette daemon at boot
