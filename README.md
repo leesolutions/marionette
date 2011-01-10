@@ -69,12 +69,15 @@ Results:
 
 
     MISC:
+    # By default, the tcp location will be the connection on eth1 and port 5555
+    # The service picks up the tcp location from /etc/marionette.tcp, update if necessary.
 
     # run as root
     chkconfig marionette on     # start marionette daemon at boot
     service marionette start    # start marionette as a service
     service marionette restart  # restart marionette service
     service marionette stop     # stop marionette service
+    
 
 
 
