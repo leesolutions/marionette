@@ -11,8 +11,9 @@ For more about Headstartapp see <http://headstartapp.com>.
 Installation
 ------------
 
-    # If you're using RVM, run this under the system context.
-    # Be sure to have the appropriate port open (for the following example, port 5555).
+If you're using RVM, run this under the system context.
+Be sure to have the appropriate port open (for the following example, port 5555) 
+on the puppet node.
     
     gem install marionette
 
@@ -26,7 +27,7 @@ In this example, puppet and master are on the same local network and the puppet'
 Note: By default, Marionette connects to "tcp://127.0.0.1:5555"
 
 Results:
-1) on the pupet, /tmp/headstartapp-marionette-test.out contains "test #{Time.now}"
+1) on the pupet, /tmp/test.out contains "test #{Time.now}"
 2) master.receive returns puppet's facts as a hash.
 3) Note: this example does not execute a puppet run. 
 
@@ -46,7 +47,13 @@ Results:
 
     CLI (start marionette-puppet as a daemon):
 
-    marionette-puppet start tcp://192.168.1.1:5555
+    marionette start tcp://192.168.1.1:5555
+
+
+
+    Rake (set up marionette as a service:
+
+    rake setup-service
 
 
 
