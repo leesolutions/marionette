@@ -20,13 +20,13 @@ module HeadStartApp
       def start
         
         # Kill existing and create new pull-loop thread
-        @thread.kill unless @thread.nil?
-        Thread.abort_on_exception = true
-        @thread = Thread.new do 
+        # @thread.kill unless @thread.nil?
+        # Thread.abort_on_exception = true
+        # @thread = Thread.new do 
           while true do
             pull
           end
-        end
+        # end
         
       end
       
