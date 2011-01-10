@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.add_dependency('ffi')
   s.add_dependency('ffi-rzmq')
   s.add_dependency('daemons')
-  s.require_paths = ["lib"]
+  s.require_paths = ["lib","lib/tasks/marionette.rake"]
   s.bindir        = "bin"
-  s.require_paths = ["lib"]
 end
