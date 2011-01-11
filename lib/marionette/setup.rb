@@ -87,7 +87,7 @@ exit 0
 CODE
   
       file = File.open('/etc/marionette.tcp','w')
-      file.write "tcp://#{ip}:5555"
+      file.write "tcp://#{ip.strip}:5555"
       file.close
       
       file = File.open('/etc/init.d/marionette','w')
