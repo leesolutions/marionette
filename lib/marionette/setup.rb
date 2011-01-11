@@ -1,21 +1,22 @@
-# This rake task sets up marionette as a service to start at boot.
-# rake marionette:service
+module HeadStartApp
+  module Marionette
 
-require 'rake'
+    # Setup method configures the server for running marionette as a service at boot up.
+    def setup(options={})
 
-namespace :marionette do
+      # Set default(s)
+      ip = `sudo /sbin/ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
+      options = { :uri => "tcp://#{ip}:5555" } if options.nil?
 
-  # task description
-  desc 'Set up marionette as a service (run this as sudo/root)'
-  
-  # define task:
-  # 1) write to init.d/marionette
-  # 2) set permissions
-  # 3) set ifconfig
-  # 4) start service
-  task :service do
-
-    script = <<CODE
+      # Set up marionette as a service to start at boot.
+      # define task:
+      # 1) write to init.d/marionette
+      # 2) set permissions
+      # 3) set ifconfig
+      # 4) start service
+    
+    
+      script = <<CODE
 #!/bin/bash
 
 ### BEGIN INIT INFO
@@ -47,7 +48,7 @@ TCP=`cat $TCPFILE`
 
 # Gracefully exit if the package has been removed.
 # test -x $DAEMON || exit 0
-echo `connecting on $TCP...`
+echo "connecting on $TCP..."
 
 d_start() {
   $DAEMON start $TCP || echo -en "\n already running"
@@ -84,23 +85,18 @@ esac
 exit 0
 
 CODE
-
-    ip = `ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
-
-    file = File.open('/etc/init.d/marionette','w')
-    file.write script
-    file.close
-    
-    file = File.open('/etc/marionette.tcp','w')
-    file.write ip
-    file.close
-    
-    system "chmod 755 /etc/init.d/marionette"
-    system "chkconfig marionette on"
-    system "service marionette start"
-  end
   
-  # set "service" as the default task
-  task :default => [:service]
+      file = File.open('/etc/marionette.tcp','w')
+      file.write ip
+      file.close
+      
+      file = File.open('/etc/init.d/marionette','w')
+      file.write script
+      file.close
+      
+      system "sudo chmod 755 /etc/init.d/marionette"
+
+    end
+  end
 
 end

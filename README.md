@@ -61,7 +61,13 @@ Ruby:
 
 CLI:
 
-    marionette start tcp://192.168.1.1:5555 # start marionette as a daemon
+    # To start marionette as a daemon
+    marionette start tcp://192.168.1.1:5555
+
+    # To setup marionette as a service
+    # pass the tcp address if you don't want to accept the default on eth1.
+    marionette-setup
+    marionette-setup tcp://192.168.1.1:5555
 
 
 
