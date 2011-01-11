@@ -87,7 +87,7 @@ exit 0
 CODE
   
       file = File.open('/etc/marionette.tcp','w')
-      file.write ip
+      file.write "tcp://#{ip}:5555"
       file.close
       
       file = File.open('/etc/init.d/marionette','w')
@@ -97,6 +97,9 @@ CODE
       system "sudo chmod 755 /etc/init.d/marionette"
 
     end
+
+    module_function :setup
+    
   end
 
 end

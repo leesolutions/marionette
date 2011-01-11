@@ -8,3 +8,16 @@ tcp = ARGV[1] rescue nil
 options = { :uri => tcp } unless ARGV.nil?
 
 HeadStartApp::Marionette.setup(options)
+
+puts <<CODE
+Marionette is now ready to run as a service.
+
+Here's a quick cheat sheet:
+
+    chkconfig marionette on     # start service at boot
+    service marionette start    # start as a service
+    service marionette restart  # restart service
+    service marionette stop     # stop service
+
+
+CODE

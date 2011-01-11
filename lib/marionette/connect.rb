@@ -2,6 +2,7 @@ module HeadStartApp
   module Marionette
 
     require 'uri'
+    require 'marionette/setup'
     require 'marionette/master'
     require 'marionette/puppet'
   
