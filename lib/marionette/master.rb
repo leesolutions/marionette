@@ -6,57 +6,116 @@ module HeadStartApp
   
     # Master class is the ZMQ socket connection on the puppet master
     class Master
-      attr_accessor :socket, :threads
+      attr_accessor :socket, :reply
   
-      def initialize(socket)
+      def initialize(uri)
   
-        # Set socket
-        @socket = socket
-  
+        require 'ffi-rzmq'
+        
+        # Set URI and connect to socket
+        @uri = uri
+
       end
-  
+      
       # Sends a msg to puppet node
-      def send(msg)
-  
-        # Send and Receive
-        @socket.send_string Marshal.dump(msg)
+      # and stands by for a reply
+      # and processes reply
+      def talk(msg)
+        
+        # Initial connection to socket 
+        @socket = socket_connect
 
-      end
-      
-      # Stands by for the next msg from puppet
-      # Processes and returns response 
-      def receive
-        
-        # Poll server until it is receive-able
-        poller = ZMQ::Poller.new
-        poller.register_readable @socket
-        
+        # Repeat until talk succeeds.
         while true do
-          
-          poll_reply = poller.poll 500
-          key = poll_reply.keys.first # fetch the first and only hash key
-          
-          break if poll_reply[key][:revents] == 1 # fetch revents
-          
-        end
-        
-        # Receive message
-        begin
-          
-          response = socket.recv_string
-          @response = Marshal.load(response)
-          
-        rescue
-          
-          # Catch non-marshal-able response
-          @response = response
 
+          # Send the message
+          @socket.send_string Marshal.dump(msg)
+
+          # Poll server until it is receive-able and re-poll if necessary
+          poller = Poller.new
+          break if poller.pull?
+          @socket = socket_reconnect
+          
         end
         
-        @response
-          
+        @reply = process_message(@socket.recv_string)
+
       end
       
+      private
+      
+        # Re-connect master to puppet socket
+        def socket_reconnect(socket)
+          socket.close
+          socket_connect
+        end
+        
+        # Connect master to puppet socket
+        def socket_connect(uri = @uri)
+
+          # Set ZMQ context
+          context = ZMQ::Context.new(1)
+    
+          # Set socket to talk to puppet
+          socket = context.socket(ZMQ::REQ)
+          socket.connect(uri.to_s)
+          
+          socket
+          
+        end
+        
+        # Unserialize if necessary
+        def process_message(response)
+          
+          begin
+            
+            msg = Marshal.load(response)
+            
+          rescue
+            
+            # Catch non-marshal-able response
+            msg = response
+  
+          end
+          
+        end
+        
+        class Poller << ZMQ::Poller
+          attr_accessor :pull, :reconnect
+          
+          def initialize(socket, options)
+            
+            super
+            register_readable socket
+            @max = options[:max] if options[:max]
+            @attempt = 0
+            
+          end
+          
+          def pull?
+            @pull
+          end
+          
+          def run!
+
+            @attempt+=1
+            poll_reply = poll 500
+            key = poll_reply.keys.first # fetch the first and only hash key
+            @pull = poll_reply[key][:revents] == 1 # true if revents==1
+            @attempt <= @max # true if allowed attempt
+            
+          end
+          
+          def start
+            
+            while run! do
+              break if @pull or @reconnect
+            end
+            
+          end
+          
+        end
+        
     end
 
   end

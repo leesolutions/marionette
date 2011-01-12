@@ -40,15 +40,9 @@ module HeadStartApp
       # Connect master
       # require 'ffi-rzmq'
       def master
-        require 'ffi-rzmq'
-
-        # Set ZMQ context
-        context = ZMQ::Context.new(1)
-  
-        # Set socket to talk to puppet
-        socket = context.socket(ZMQ::REQ)
-        socket.connect(@uri.to_s)
-        @connection = HeadStartApp::Marionette::Master.new(socket)
+        
+        # socket is created within Master so Master can attempt reconnect if Puppet reboots
+        @connection = HeadStartApp::Marionette::Master.new(@uri.to_s)
   
       end
       
