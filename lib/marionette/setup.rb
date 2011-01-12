@@ -6,7 +6,7 @@ module HeadStartApp
 
       # Set default(s)
       ip = `sudo /sbin/ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
-      options = { :uri => "tcp://#{ip}:5555" } if options.nil?
+      options = { :uri => "tcp://#{ip.strip}:5555" } if options.nil?
 
       # Set up marionette as a service to start at boot.
       # define task:

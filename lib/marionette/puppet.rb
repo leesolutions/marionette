@@ -20,7 +20,9 @@ module HeadStartApp
       def start
         
         # Continually pull down requests
-        while true { pull }
+        while true do
+          pull
+        end
         
       end
       
