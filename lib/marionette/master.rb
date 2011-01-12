@@ -2,15 +2,13 @@ module HeadStartApp
   module Marionette
 
     require 'uri'
-  
+    require 'ffi-rzmq'
   
     # Master class is the ZMQ socket connection on the puppet master
     class Master
       attr_accessor :socket, :reply
   
       def initialize(uri)
-  
-        require 'ffi-rzmq'
         
         # Set URI and connect to socket
         @uri = uri
@@ -32,7 +30,7 @@ module HeadStartApp
           @socket.send_string Marshal.dump(msg)
 
           # Poll server until it is receive-able and re-poll if necessary
-          poller = Poller.new
+          poller = Poller.new @socket, {:max => 10, :interval => 500}
           break if poller.pull?
           @socket = socket_reconnect
           
@@ -46,8 +44,10 @@ module HeadStartApp
       
         # Re-connect master to puppet socket
         def socket_reconnect(socket)
+          
           socket.close
           socket_connect
+          
         end
         
         # Connect master to puppet socket
@@ -80,7 +80,7 @@ module HeadStartApp
           
         end
         
-        class Poller << ZMQ::Poller
+        class Poller < ZMQ::Poller
           attr_accessor :pull, :reconnect
           
           def initialize(socket, options)
@@ -88,6 +88,7 @@ module HeadStartApp
             super
             register_readable socket
             @max = options[:max] if options[:max]
+            @interval = options[:interval] ? options[:interval] : 10
             @attempt = 0
             
           end
@@ -99,7 +100,7 @@ module HeadStartApp
           def run!
 
             @attempt+=1
-            poll_reply = poll 500
+            poll_reply = poll @interval
             key = poll_reply.keys.first # fetch the first and only hash key
             @pull = poll_reply[key][:revents] == 1 # true if revents==1
             @attempt <= @max # true if allowed attempt
