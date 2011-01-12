@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Dan Lee"]
   s.email       = ["dan@headstartapp.com"]
-  s.homepage    = "http://headstartapp.com"
+  s.homepage    = "https://github.com/headstartapp/marionette"
   s.summary     = %q{0MQ connection between puppet and master.}
   s.description = %q{Marionette connects a headstartapp server instance (puppet node) to its master and executes puppet runs on demand. Marionette uses fast and lightweight 0MQ <http://zeromq.org> messaging system.}
 
