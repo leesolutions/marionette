@@ -3,3 +3,4 @@ pkg/*
 .bundle
 *.output
 *.pid
+*.rb

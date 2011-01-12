@@ -32,7 +32,7 @@ module HeadStartApp
           # Poll server until it is receive-able and re-poll if necessary
           poller = Poller.new @socket, {:max => 10, :interval => 500}
           break if poller.pull?
-          @socket = socket_reconnect
+          @socket = socket_reconnect(@socket)
           
         end
         
@@ -85,11 +85,12 @@ module HeadStartApp
           
           def initialize(socket, options)
             
-            super
+            super()
             register_readable socket
             @max = options[:max] if options[:max]
             @interval = options[:interval] ? options[:interval] : 10
             @attempt = 0
+            start
             
           end
           
