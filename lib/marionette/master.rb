@@ -27,7 +27,20 @@ module HeadStartApp
       # Processes and returns response 
       def receive
         
-        # Stand by for a response
+        # Poll server until it is receive-able
+        poller = ZMQ::Poller.new
+        poller.register_readable @socket
+        
+        while true do
+          
+          poll_reply = poller.poll 500
+          key = poll_reply.keys.first # fetch the first and only hash key
+          
+          break if poll_reply[key][:revents] == 1 # fetch revents
+          
+        end
+        
+        # Receive message
         begin
           
           response = socket.recv_string

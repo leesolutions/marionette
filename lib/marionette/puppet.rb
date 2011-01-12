@@ -19,14 +19,8 @@ module HeadStartApp
       # Starts send and response thread
       def start
         
-        # Kill existing and create new pull-loop thread
-        # @thread.kill unless @thread.nil?
-        # Thread.abort_on_exception = true
-        # @thread = Thread.new do 
-          while true do
-            pull
-          end
-        # end
+        # Continually pull down requests
+        while true { pull }
         
       end
       
@@ -98,25 +92,14 @@ module HeadStartApp
       # Fetches facts collection
       def facter_run
         
-        Facter.loadfacts
-        @message = Facter.collection.to_hash
-        
+        # Load facts from cli to reduce ruby memory footprint
+        facts = `facter`
+        facts = facts.split "\n"
+        facts.collect! {|f| ff=f.split("=>"); {ff[0].strip.to_sym => ff[1]}}.compact
+        @message = facts
+
       end
   
-      # Some stats
-      # - to be set up as a fact(s) later
-      def stats
-  
-        stats = {}
-        stats[:disk] = `df -h -P` rescue nil
-        stats[:network] = `vnstat` rescue nil
-        stats[:memory] = `vmstat -a` rescue nil
-        stats[:process] = `monit status` rescue nil
-        stats[:cpu] = `mpstat -P ALL | awk 'NR>2' | cut -c14-` rescue nil
-        stats
-  
-      end
-        
     end
     
   end
