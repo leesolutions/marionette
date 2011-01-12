@@ -15,7 +15,7 @@ module HeadStartApp
       def initialize(options = nil)
         
         # Set default(s)
-        options = { :uri => "tcp://127.0.0.1:5555" } if options.nil?
+        options = { :uri => `cat /etc/marionette.tcp` } if options.nil?
         
         # Set URI
         @uri = URI(options[:uri])
