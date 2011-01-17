@@ -5,10 +5,11 @@ Marionette connects a headstartapp server instance (puppet node) to its
 master and executes puppet runs on demand. Marionette uses fast and lightweight 
 0MQ <http://zeromq.org> messaging system.
 
-From version 0.0.8 onward, use puppet agent for puppet runs
-From version 0.0.7 onward, talk replaces send and receive.
-From version 0.0.7 onward, marionette reconnects after n-poll attempts (10 by default).
-From version 0.0.6 onward, marionette polls before receives.
+* From version 0.0.9 onward, Marionette.setup automatically run at connect.
+* From version 0.0.8 onward, use puppet agent for puppet runs
+* From version 0.0.7 onward, talk replaces send and receive.
+* From version 0.0.7 onward, marionette reconnects after n-poll attempts (10 by default).
+* From version 0.0.6 onward, marionette polls before receives.
 
 
 Installation

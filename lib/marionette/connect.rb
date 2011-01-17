@@ -15,8 +15,13 @@ module HeadStartApp
       def initialize(options = nil)
         
         # Set default(s)
-        options = { :uri => `cat /etc/marionette.tcp` } if options.nil?
-        
+        if options.nil?
+
+          HeadStartApp::Marionette.setup() if not File.exists? "/etc/marionette.tcp"
+          options = { :uri => `cat /etc/marionette.tcp` }
+
+        end
+                
         # Set URI
         @uri = URI(options[:uri])
   

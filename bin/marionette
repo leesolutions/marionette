@@ -4,8 +4,12 @@ require 'rubygems'
 require 'daemons'
 require 'marionette'
 
-tcp = ARGV[1] rescue nil
-options = { :uri => tcp } unless ARGV.nil?
+options = nil
+
+if ARGV.size > 1
+  tcp = ARGV[1] rescue nil
+  options = { :uri => tcp }
+end
 
 Daemons.run_proc('marionette',:dir_mode => :system, :log_output => true) do
   HeadStartApp::Marionette::Connect.new(options).puppet
