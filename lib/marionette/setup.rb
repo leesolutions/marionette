@@ -44,14 +44,15 @@ PIDFILE=/var/run/$NAME.pid
 LOGFILE=/var/log/$NAME.log
 TCPFILE=/etc/marionette.tcp
 SCRIPTNAME=/etc/init.d/$NAME
-TCP=`cat $TCPFILE`
+# TCP=`cat $TCPFILE`
 
 # Gracefully exit if the package has been removed.
 # test -x $DAEMON || exit 0
-echo "connecting on $TCP..."
+# echo "connecting on $TCP..."
 
 d_start() {
-  $DAEMON start $TCP || echo -en "\n already running"
+  # $DAEMON start $TCP || echo -en "\n already running"
+  $DAEMON start || echo -en "\n already running"
 }
 
 d_stop() {
