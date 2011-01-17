@@ -5,6 +5,8 @@ Marionette connects a headstartapp server instance (puppet node) to its
 master and executes puppet runs on demand. Marionette uses fast and lightweight 
 0MQ <http://zeromq.org> messaging system.
 
+From version 0.0.8 onward, use puppet agent for puppet runs
+From version 0.0.7 onward, talk replaces send and receive.
 From version 0.0.7 onward, marionette reconnects after n-poll attempts (10 by default).
 From version 0.0.6 onward, marionette polls before receives.
 
@@ -46,15 +48,14 @@ Ruby:
 
     puppet = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555) puppet
     master = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555").master
-    message = {:run=>{:system=>true,:facter=>true},:system=>{:command=>"echo 'test @ #{Time.now}' > /tmp/test.out"}}
-    master.send message
-    master.receive
+    message = {:run=>[:system,:facter,:puppet],:system=>{:command=>"echo 'test @ #{Time.now}' > /tmp/test.out"}}
+    master.talk messagee
 
     # Results:
     # 
     # 1) on the pupet, /tmp/test.out contains "test #{Time.now}"
-    # 2) master.receive returns puppet's facts as a hash.
-    # 3) Note: this example does not execute a puppet run. 
+    # 2) returns puppet's facts as a hash.
+    # 3) completes a puppet run. 
 
 
 
@@ -85,11 +86,7 @@ MISC:
 To Do
 ----
 
-1) Complete implementation for puppet runs.
-
-2) Example of executing a run.
-
-3) Instructions for setting up SSH Tunnel to secure marionette.
+1) Instructions for setting up SSH Tunnel to secure marionette.
 
 
 

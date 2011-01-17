@@ -39,9 +39,9 @@ module HeadStartApp
           
           # Execute a puppet run and/or ad hoc system commands
           @response = Marshal.load(@response)
-          puppet_run if @response[:run][:puppet]
-          system_run if @response[:run][:system]
-          facter_run if @response[:run][:facter]
+          puppet_run if @response[:run].include? :puppet
+          system_run if @response[:run].include? :system
+          facter_run if @response[:run].include? :facter
           
         rescue
           
@@ -84,9 +84,9 @@ module HeadStartApp
       def puppet_run
   
         if @response[:puppet].nil?
-          system "puppetd --onetime --no-daemonize"
+          system "puppet agent --server master.headstartapp.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log"
         else
-          system "puppetd #{@response[:puppet][:args]}"
+          system "puppet #{@response[:puppet][:args]}"
         end
   
       end
