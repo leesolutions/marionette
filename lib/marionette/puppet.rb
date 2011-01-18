@@ -84,7 +84,7 @@ module HeadStartApp
       def puppet_run
   
         if @response[:puppet].nil?
-          system "puppet agent --server master.headstartapp.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log"
+          system "puppet agent --server master.runrails.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log"
         else
           system "puppet #{@response[:puppet][:args]}"
         end

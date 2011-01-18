@@ -20,17 +20,17 @@ module HeadStartApp
       # and processes reply
       def talk(msg, send_guarantee = false, poll_guarantee = false)
         
-        # Initial connection to socket 
-        @socket = socket_connect
-        @poll = true
-
         # Initiate send
         begin
           
           # if send successful start polling
+          @socket = socket_connect
           @socket.send_string Marshal.dump(msg), ZMQ::NOBLOCK
+          @poll = true
           
         rescue
+          
+          puts "*****RESCUE******"
           
           if send_guarantee
             
@@ -39,10 +39,14 @@ module HeadStartApp
               
               begin
               
+                @socket = socket_connect
                 @socket.send_string Marshal.dump(msg), ZMQ::NOBLOCK
+                @poll = true
                 break
               
               rescue
+                
+                puts "*****inner RESCUE******"
                 
                 # sleep half a second before next attempt
                 sleep 500
