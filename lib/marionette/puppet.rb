@@ -2,7 +2,6 @@ module HeadStartApp
   module Marionette
 
     require 'uri'
-    require 'facter'
   
   
     # Puppet class is the active ZMQ connection on the puppet node
@@ -12,6 +11,7 @@ module HeadStartApp
       def initialize(socket)
 
         @socket = socket
+        @messages = []
         start
         
       end
@@ -33,7 +33,7 @@ module HeadStartApp
         @response = @socket.recv
         
         # Sets default message to current time
-        @message = "Response from node @ #{Time.now}."
+        @message << "Response from node @ #{Time.now}."
         
         begin
           
@@ -52,7 +52,7 @@ module HeadStartApp
 
         # Send back system stats
         # @socket.send Marshal.dump(stats)
-        @socket.send Marshal.dump(@message)
+        @socket.send Marshal.dump(@messages)
 
       end
       
@@ -76,7 +76,7 @@ module HeadStartApp
       # Executes ad hoc system command msg'd from the master
       def system_run
   
-        system "#{@response[:system][:command]}"
+        @message << `#{@response[:system][:command]}`
   
       end
       
@@ -84,9 +84,9 @@ module HeadStartApp
       def puppet_run
   
         if @response[:puppet].nil?
-          system "puppet agent --server master.runrails.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log"
+          @message << `puppet agent --server master.runrails.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log`
         else
-          system "puppet #{@response[:puppet][:args]}"
+          @message << `puppet agent #{@response[:puppet][:args]}`
         end
   
       end
@@ -98,7 +98,7 @@ module HeadStartApp
         facts = `facter`
         facts = facts.split "\n"
         facts.collect! {|f| ff=f.split("=>"); {ff[0].strip.to_sym => ff[1]}}.compact
-        @message = facts
+        @message << facts
 
       end
   

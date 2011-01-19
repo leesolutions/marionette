@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email       = ["dan@headstartapp.com"]
   s.homepage    = "https://github.com/headstartapp/marionette"
   s.summary     = %q{0MQ connection between puppet and master.}
-  s.description = %q{Marionette connects a headstartapp server instance (puppet node) to its master and executes puppet runs on demand. Marionette uses fast and lightweight 0MQ <http://zeromq.org> messaging system.}
+  s.description = %q{Marionette connects a puppet node to its master and executes puppet runs on demand. Marionette uses fast and lightweight 0MQ <http://zeromq.org> messaging system.}
 
   s.rubyforge_project = "marionette"
 
