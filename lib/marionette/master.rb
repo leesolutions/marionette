@@ -20,6 +20,17 @@ module HeadStartApp
       # and processes reply
       def talk(msg, send_guarantee = false, poll_guarantee = false)
         
+        # @replies = []
+        # 
+        # # Fetch queued message first
+        # begin
+        #   
+        #   @socket = socket_connect
+        #   @replies << process_message(@socket.recv_string)
+        #   
+        # rescue
+        # end
+
         # Initiate send
         begin
           

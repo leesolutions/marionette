@@ -6,12 +6,11 @@ module HeadStartApp
   
     # Puppet class is the active ZMQ connection on the puppet node
     class Puppet
-      attr_accessor :socket, :thread, :message
+      attr_accessor :socket, :thread, :messages
   
       def initialize(socket)
 
         @socket = socket
-        @messages = []
         start
         
       end
@@ -33,7 +32,7 @@ module HeadStartApp
         @response = @socket.recv
         
         # Sets default message to current time
-        @message << "Response from node @ #{Time.now}."
+        @messages = ["Response from node @ #{Time.now}."]
         
         begin
           
@@ -76,7 +75,7 @@ module HeadStartApp
       # Executes ad hoc system command msg'd from the master
       def system_run
   
-        @message << `#{@response[:system][:command]}`
+        @messages << `#{@response[:system][:command]}`
   
       end
       
@@ -84,9 +83,9 @@ module HeadStartApp
       def puppet_run
   
         if @response[:puppet].nil?
-          @message << `puppet agent --server master.runrails.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log`
+          @messages << `puppet agent --server master.runrails.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log`
         else
-          @message << `puppet agent #{@response[:puppet][:args]}`
+          @messages << `puppet agent #{@response[:puppet][:args]}`
         end
   
       end
@@ -95,10 +94,13 @@ module HeadStartApp
       def facter_run
         
         # Load facts from cli to reduce ruby memory footprint
-        facts = `facter`
-        facts = facts.split "\n"
-        facts.collect! {|f| ff=f.split("=>"); {ff[0].strip.to_sym => ff[1]}}.compact
-        @message << facts
+        facts = {}
+        raw = `facter`
+        raw.split("\n").each do |line|
+          fact = line.split(" => ")
+          facts[fact[0].strip.to_sym] = fact[1].strip
+        end
+        @messages << facts
 
       end
   
