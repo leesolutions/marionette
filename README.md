@@ -1,15 +1,14 @@
 Headstartapp::Marionette - ZMQ connection to puppet master
 ============================================================
 
-Marionette connects a headstartapp server instance (puppet node) to its 
-master and executes puppet runs on demand. Marionette uses fast and lightweight 
-0MQ <http://zeromq.org> messaging system.
+Marionette connects a puppet node to its master and executes puppet runs on demand. 
+Marionette uses fast and lightweight 0MQ <http://zeromq.org> messaging system.
 
-* From version 0.0.12 onward, Puppet.message returns an array and includes system command results.
+* From version 0.0.14 onward, added methods: puppet!, facter! and run!
 * From version 0.0.9 onward, Marionette.setup automatically ran at connect.
 * From version 0.0.8 onward, use puppet agent for puppet runs
 * From version 0.0.7 onward, talk replaces send and receive.
-* From version 0.0.7 onward, marionette reconnects after n-poll attempts (10 by default).
+* From version 0.0.7 onward, marionette reconnects after n-poll attempts (10 by default @ 100 millisecond interval).
 * From version 0.0.6 onward, marionette polls before receives.
 
 
@@ -47,18 +46,27 @@ Ruby:
 
     require 'rubygems'
     require 'marionette'
+    
+    # With this option, ZMQ tries sending every 1 sec if recipient unavailable.
+    ZMQ::RECOVERY_IVL = 1
 
     puppet = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555) puppet
     master = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555").master
-    message = {:run=>[:system,:facter,:puppet],:system=>{:command=>"echo 'test @ #{Time.now}' > /tmp/test.out"}}
-    master.talk messagee
 
-    # Results:
-    # 
-    # 1) on the pupet, /tmp/test.out contains "test #{Time.now}"
-    # 2) returns puppet's facts as a hash.
-    # 3) completes a puppet run. 
-
+    # Passing this argument polls node till reply is available (default = false).
+    # By default the master polls for 1 second.
+    poll_till_reply_available = true
+    
+    # Executes a puppet run and returns output
+    puts master.puppet!(poll_till_reply_available)
+    
+    # Executes facter and returns it as a hash
+    puts master.facter!(poll_till_reply_available)
+    
+    # Executes an ad hoc system command
+    # Result on the node: /tmp/test.out contains "test #{Time.now}"
+    cmd = "echo 'test @ #{Time.now}' > /tmp/test.out && cat /tmp/test.out"
+    puts master.run!(cmd, poll_till_reply_available)
 
 
 CLI:

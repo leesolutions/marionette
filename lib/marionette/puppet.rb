@@ -6,7 +6,7 @@ module HeadStartApp
   
     # Puppet class is the active ZMQ connection on the puppet node
     class Puppet
-      attr_accessor :socket, :thread, :messages
+      attr_accessor :socket, :thread, :message
   
       def initialize(socket)
 
@@ -25,14 +25,11 @@ module HeadStartApp
         
       end
       
-      # Pulls down messages from the master and pushes up stats
+      # Pulls down message from the master and pushes up stats
       def pull
         
         # Stand by for a response msg
         @response = @socket.recv
-        
-        # Sets default message to current time
-        @messages = ["Response from node @ #{Time.now}."]
         
         begin
           
@@ -45,13 +42,16 @@ module HeadStartApp
         rescue
           
           # Catch non-hash responses
-          puts @response
+          @message =  @response
           
         end
 
+        # Sends a response if nil
+        @message = "Response from node @ #{Time.now}." if @message.nil?
+
         # Send back system stats
         # @socket.send Marshal.dump(stats)
-        @socket.send Marshal.dump(@messages)
+        @socket.send Marshal.dump(@message)
 
       end
       
@@ -75,7 +75,7 @@ module HeadStartApp
       # Executes ad hoc system command msg'd from the master
       def system_run
   
-        @messages << `#{@response[:system][:command]}`
+        @message = `#{@response[:system][:command]}`
   
       end
       
@@ -83,9 +83,9 @@ module HeadStartApp
       def puppet_run
   
         if @response[:puppet].nil?
-          @messages << `puppet agent --server master.runrails.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log`
+          @message = `puppet agent --server master.runrails.com --verbose --waitforcert 5 --no-daemonize --onetime --logdest /var/log/puppet.log`
         else
-          @messages << `puppet agent #{@response[:puppet][:args]}`
+          @message = `puppet agent #{@response[:puppet][:args]}`
         end
   
       end
@@ -100,7 +100,7 @@ module HeadStartApp
           fact = line.split(" => ")
           facts[fact[0].strip.to_sym] = fact[1].strip
         end
-        @messages << facts
+        @message = facts
 
       end
   

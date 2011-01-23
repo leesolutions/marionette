@@ -3,8 +3,9 @@ module HeadStartApp
 
     require 'uri'
     require 'ffi-rzmq'
-  
+    
     # Master class is the ZMQ socket connection on the puppet master
+    # Before calling the talk method set ZMQ::RECOVERY_IVL = 1 to force ZMQ to re-try every 1 second for failed send attempts. 
     class Master
       attr_accessor :socket, :reply
   
@@ -15,112 +16,76 @@ module HeadStartApp
 
       end
       
+      def puppet!(poll_till_reply_available = false)
+        
+        msg = {:run=>[:puppet]}
+        talk msg, poll_till_reply_available
+        
+      end
+      
+      def facter!(poll_till_reply_available = false)
+        
+        msg = {:run=>[:facter]}
+        talk msg, poll_till_reply_available
+        
+      end
+      
+      def run!(cmd, poll_till_reply_available = false)
+        
+        msg = {:run=>[:system],:system=>{:command=>cmd}}
+        talk msg, poll_till_reply_available
+        
+      end
+      
       # Sends a msg to puppet node
       # and stands by for a reply
       # and processes reply
-      def talk(msg, send_guarantee = false, poll_guarantee = false)
+      def talk(msg, poll_till_reply_available = false)
         
-        # @replies = []
-        # 
-        # # Fetch queued message first
-        # begin
-        #   
-        #   @socket = socket_connect
-        #   @replies << process_message(@socket.recv_string)
-        #   
-        # rescue
-        # end
-
         # Initiate send
-        begin
-          
-          # if send successful start polling
-          @socket = socket_connect
-          @socket.send_string Marshal.dump(msg), ZMQ::NOBLOCK
-          @poll = true
-          
-        rescue
-          
-          puts "*****RESCUE******"
-          
-          if send_guarantee
-            
-            # Keep sending till successful
-            while true do
-              
-              begin
-              
-                @socket = socket_connect
-                @socket.send_string Marshal.dump(msg), ZMQ::NOBLOCK
-                @poll = true
-                break
-              
-              rescue
-                
-                puts "*****inner RESCUE******"
-                
-                # sleep half a second before next attempt
-                sleep 500
-              
-              end
+        # ZMQ's send is asynchronous: send_string will queue the send job in the background
+        # and keep trying until the node is available and accepts the message.  
+        @socket = socket_connect
+        @socket.send_string Marshal.dump(msg), ZMQ::NOBLOCK
 
-            end
-  
-          else
-            
-            # don't poll if send failed and no guarantee 
-            @poll = false
-            
-          end
+        options = {:max => 10, :interval => 100}
+        poller = Poller.new @socket, options
+
+        if not poller.pull? and poll_till_reply_available
           
+          # Repeat poll till reply receive-able
+          while true do
+            
+            poller = Poller.new @socket, options
+            break if poller.pull?
+
+          end
+
         end
 
-        if poll?
-          
-          options = {:max => 10, :interval => 500}
-          poller = Poller.new @socket, options
+        if poller.pull?
 
-          if not poller.pull? and poll_guarantee
-            
-            # Repeat poll till reply receive-able
-            while true do
-              
-              @socket = socket_reconnect(@socket)
-              poller = Poller.new @socket, options
-              break if poller.pull?
-
-            end
-
-          end
-
-          if poller.pull?
-
-            # Fetch reply
-            @reply = process_message(@socket.recv_string)
-
-          else
-
-            # Polled but no reply
-            @reply = "Polled #{options[:max]} times every #{options[:interval]} milliseconds but no reply."
-
-          end
+          # Fetch reply
+          @reply = process_message(@socket.recv_string)
 
         else
-          
-          # Send failed
-          @reply = "Send failed!"
+
+          # Polled but no reply
+          @reply = "Polled #{options[:max]} times every #{options[:interval]} milliseconds but no reply."
 
         end
-        
+
       end
       
       private
       
         # Re-connect master to puppet socket
-        def socket_reconnect(socket)
+        def close_open_socket
           
-          socket.close
-          socket_connect
+          begin
+            @socket.close
+          rescue
+          end
           
         end
         
@@ -130,6 +95,8 @@ module HeadStartApp
         
         # Connect master to puppet socket
         def socket_connect(uri = @uri)
+          
+          close_open_socket
 
           # Set ZMQ context
           context = ZMQ::Context.new(1)

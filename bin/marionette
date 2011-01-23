@@ -4,6 +4,8 @@ require 'rubygems'
 require 'daemons'
 require 'marionette'
 
+ZMQ::RECOVERY_IVL = 1
+
 options = nil
 
 if ARGV.size > 1
