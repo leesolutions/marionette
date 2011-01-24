@@ -50,19 +50,24 @@ Ruby:
     # With this option, ZMQ tries sending every 1 sec if recipient unavailable.
     ZMQ::RECOVERY_IVL = 1
 
-    puppet = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555) puppet
+
+    puppet = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555").puppet
     master = HeadStartApp::Marionette::Connect.new(:uri=>"192.168.1.1:5555").master
+
 
     # Passing this argument polls node till reply is available (default = false).
     # By default the master polls for 1 second.
     poll_till_reply_available = true
     
+
     # Executes a puppet run and returns output
     puts master.puppet!(poll_till_reply_available)
     
+
     # Executes facter and returns it as a hash
     puts master.facter!(poll_till_reply_available)
     
+
     # Executes an ad hoc system command
     # Result on the node: /tmp/test.out contains "test #{Time.now}"
     cmd = "echo 'test @ #{Time.now}' > /tmp/test.out && cat /tmp/test.out"
